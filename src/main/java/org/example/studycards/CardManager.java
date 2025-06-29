@@ -54,7 +54,7 @@ public class CardManager {
         if(validateCard(question, answer)) {
             throw new IllegalArgumentException("Invalid question or answer");
         }
-        Card card = new Card(question, answer);
+        Card card = Card.create(question, answer);
         Integer response = nextID;
         cards.put(nextID, card);
         nextID++;
