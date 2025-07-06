@@ -46,7 +46,6 @@ public class HabitTracker {
 
     public String formatHabitDate(LocalDateTime date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
         return date.format(formatter);
     }
 
@@ -54,10 +53,8 @@ public class HabitTracker {
         return this.tracker.keySet().stream().toList();
     }
 
-    public int addHabit(String name, String motivation, Integer dailyMinutesDedication, Integer dailyHoursDedication, Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer seconds, Boolean isConcluded) {
-        LocalTime lt = LocalTime.of(dailyHoursDedication, dailyMinutesDedication);
-        LocalDateTime startDate = LocalDateTime.of(year, month, day, hour, minute, seconds);
-        Habit habit = new Habit(name, motivation, lt, this.nextId, startDate, isConcluded);
+    public int addHabit(String name, String motivation, LocalTime dailyDedication, LocalDateTime startDate, Boolean isConcluded) {
+        Habit habit = new Habit(name, motivation, dailyDedication, this.nextId, startDate, isConcluded);
         this.habits.add(habit);
         int response = nextId;
         this.tracker.put(nextId, new ArrayList<>());
@@ -66,12 +63,19 @@ public class HabitTracker {
     }
 
     public int handleAddHabitAdapter(List<String> stringProperties, List<Integer> intProperties, boolean isConcluded){
-        return addHabit(stringProperties.get(0), stringProperties.get(1), intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5), intProperties.get(6), intProperties.get(7), isConcluded);
+        LocalTime dailyDedication = LocalTime.of(intProperties.get(1), intProperties.get(0));
+        LocalDateTime startDate = LocalDateTime.of(
+                intProperties.get(2), // year
+                intProperties.get(3), // month
+                intProperties.get(4), // day
+                intProperties.get(5), // hour
+                intProperties.get(6), // minute
+                intProperties.get(7)  // second
+        );
+        return addHabit(stringProperties.get(0), stringProperties.get(1), dailyDedication, startDate, isConcluded);
     }
 
-
     public int addHabit(String name, String motivation) {
-
         Habit habit = new Habit(name, motivation, this.nextId);
         this.habits.add(habit);
         int response = nextId;
