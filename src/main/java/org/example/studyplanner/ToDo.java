@@ -2,17 +2,16 @@ package org.example.studyplanner;
 
 import java.text.MessageFormat;
 
-public class ToDo implements PlannerMaterial{
-    private Integer id;
+public class ToDo implements PlannerMaterial {
+    private Integer id;  // id mutável apenas para compatibilidade com testes
     private String title;
     private String description;
     private int priority;
 
     public ToDo(Integer id, String title, String description, int priority) {
+        if (id == null || id <= 0) throw new IllegalArgumentException("Id must be positive and not null");
         this.id = id;
-        this.title = title;
-        this.description = description;
-        this.priority = priority;
+        updateDetails(title, description, priority);
     }
 
     @Override
@@ -20,11 +19,12 @@ public class ToDo implements PlannerMaterial{
         return MessageFormat.format("[(Priority:{3}) ToDo {0}: {1}, {2}]", id, title, description, priority);
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
+        if (id <= 0) throw new IllegalArgumentException("Id must be positive");
         this.id = id;
     }
 
@@ -32,7 +32,8 @@ public class ToDo implements PlannerMaterial{
         return title;
     }
 
-    public void setTitle(String title) {
+    public void updateTitle(String title) {
+        if (title == null || title.isEmpty()) throw new IllegalArgumentException("Title cannot be empty");
         this.title = title;
     }
 
@@ -40,7 +41,8 @@ public class ToDo implements PlannerMaterial{
         return description;
     }
 
-    public void setDescription(String description) {
+    public void updateDescription(String description) {
+        if (description == null) throw new IllegalArgumentException("Description cannot be null");
         this.description = description;
     }
 
@@ -49,6 +51,26 @@ public class ToDo implements PlannerMaterial{
     }
 
     public void setPriority(int priority) {
+        if (priority < 0) throw new IllegalArgumentException("Priority cannot be negative");
         this.priority = priority;
+    }
+
+    // ---- Adicionando comportamentos relevantes ----
+
+    /** Promove a prioridade para a mais alta. */
+    public void escalate() {
+        this.priority = Integer.MAX_VALUE;
+    }
+
+    /** Marca a tarefa como concluída (usando descrição). */
+    public void markAsDone() {
+        this.description = this.description + " [DONE]";
+    }
+
+    /** Atualiza todos os dados em uma operação atômica. */
+    public void updateDetails(String title, String description, int priority) {
+        updateTitle(title);
+        updateDescription(description);
+        setPriority(priority);
     }
 }
