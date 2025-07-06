@@ -53,13 +53,26 @@ public class StudyRegistryController {
 
     private void handleSetObjective(StudyObjective objective){
         handleMethodHeader("(Study Objective Edit)");
-        System.out.println("Type the following info: Integer id, Integer priority " +
-                "Integer practicedDays, int day, int month, int year, String name, String title, String description, " +
-                "String topic, String objectiveInOneLine, String objectiveFullDescription, String motivation, " +
-                "Double duration, boolean isActive  \n");
-        objective.handleSetObjective(Integer.parseInt(getInput()), Integer.parseInt(getInput()),Integer.parseInt(getInput()),Integer.parseInt(getInput()),Integer.parseInt(getInput()),
-                Integer.parseInt(getInput()), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                Double.parseDouble(getInput()), Boolean.parseBoolean(getInput()));
+        System.out.println("Type the following info: Integer id, Integer priority, Integer practicedDays, int day, int month, int year, " +
+                "String name, String title, String description, String topic, String objectiveInOneLine, String objectiveFullDescription, " +
+                "String motivation, Double duration, boolean isActive  \n");
+        objective.handleSetObjective(
+                Integer.parseInt(getInput()),
+                Integer.parseInt(getInput()),
+                Integer.parseInt(getInput()),
+                Integer.parseInt(getInput()),
+                Integer.parseInt(getInput()),
+                Integer.parseInt(getInput()),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                Double.parseDouble(getInput()),
+                Boolean.parseBoolean(getInput())
+        );
     }
 
     private StudyObjective getStudyObjectiveInfo(){
@@ -90,8 +103,21 @@ public class StudyRegistryController {
                 "String mainTask, @NotNull  Integer numberOfSteps, boolean isImportant. " +
                 "The Date to start is today, the date to end is x days from now, type the quantity of days\n");
         LocalDateTime createdAT = LocalDateTime.now();
-        studyPlan.assignSteps(getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(), getInput(),
-                Integer.parseInt(getInput()), Boolean.parseBoolean(getInput()), createdAT, createdAT.plusDays(Long.parseLong(getInput())));
+        studyPlan.assignSteps(
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                getInput(),
+                Integer.parseInt(getInput()),
+                Boolean.parseBoolean(getInput()),
+                createdAT,
+                createdAT.plusDays(Long.parseLong(getInput()))
+        );
     }
 
     private StudyGoal getStudyGoalInfo(){
@@ -111,17 +137,32 @@ public class StudyRegistryController {
 
     private void editAudio(AudioReference audioReference){
         handleMethodHeader("(Audio Edit)");
-        System.out.println("Type the following info:  AudioReference. AudioQuality audioQuality, boolean isDownloadable, " +
+        System.out.println("Type the following info: AudioQuality (LOW | MEDIUM | HIGH | VERY_HIGH), boolean isDownloadable, " +
                 "String title, String description, String link, String accessRights, String license, String language, int rating, " +
                 "int viewCount, int shareCount \n");
-        AudioReference.AudioQuality quality =AudioReference.audioQualityAdapter(getInput());
-        audioReference.editAudio(quality, Boolean.parseBoolean(getInput()), getInput(), getInput(), getInput(), getInput(),
-                getInput(), getInput(), Integer.parseInt(getInput()), Integer.parseInt(getInput()), Integer.parseInt(getInput()));
+
+        AudioReference.AudioQuality quality = AudioReference.audioQualityAdapter(getInput());
+
+        AudioReference.AudioEditParams params = AudioReference.AudioEditParams.builder()
+                .audioQuality(quality)
+                .isDownloadable(Boolean.parseBoolean(getInput()))
+                .title(getInput())
+                .description(getInput())
+                .link(getInput())
+                .accessRights(getInput())
+                .license(getInput())
+                .language(getInput())
+                .rating(Integer.parseInt(getInput()))
+                .viewCount(Integer.parseInt(getInput()))
+                .shareCount(Integer.parseInt(getInput()))
+                .build();
+
+        audioReference.editAudio(params);
     }
 
     private AudioReference addAudioReference(){
         handleMethodHeader("(Audio Reference Creation)");
-        System.out.println("Type the following info: Audio Quality ( LOW | MEDIUM | HIGH | VERY_HIGH) \n");
+        System.out.println("Type the following info: Audio Quality (LOW | MEDIUM | HIGH | VERY_HIGH) \n");
         AudioReference audioReference = new AudioReference(AudioReference.audioQualityAdapter(getInput()));
         editAudio(audioReference);
         return audioReference;
@@ -137,7 +178,7 @@ public class StudyRegistryController {
 
     private TextReference addTextReference(){
         handleMethodHeader("(Text Reference Creation)");
-        System.out.println("Type the following info:  String title, String language, int wordCount, String format, String accessRights \n");
+        System.out.println("Type the following info: String title, String language, int wordCount, String format, String accessRights \n");
         return new TextReference(getInput(), getInput(), Integer.parseInt(getInput()), getInput(),
                 getInput());
     }
@@ -210,6 +251,6 @@ public class StudyRegistryController {
                 5 - add study plan
                 6 - set up week
                 7 - get week responsibilities
-               """);
+                """);
     }
 }
