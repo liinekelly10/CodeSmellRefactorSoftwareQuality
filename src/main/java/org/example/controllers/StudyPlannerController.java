@@ -3,11 +3,11 @@ package org.example.controllers;
 import org.example.studyplanner.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 
 public class StudyPlannerController {
     private Map<String, Runnable> actions = new HashMap<>();
@@ -42,7 +42,6 @@ public class StudyPlannerController {
         actions.put("22", this::handleRemoveHabit);
         actions.put("23", this::handleViewHabits);
     }
-
 
     private void handleViewMenuOptions() {
         actions.put("31", () -> {
@@ -116,8 +115,10 @@ public class StudyPlannerController {
         String motivation = Objects.requireNonNull(this.getInput().trim());
         Integer dailyMinutesDedication = Integer.parseInt(Objects.requireNonNull(this.getInput().trim()));
         Integer dailyHoursDedication = Integer.parseInt(Objects.requireNonNull(this.getInput().trim()));
-        LocalDateTime start =  handleGetStartDate();
-        habitTracker.addHabit(name, motivation, dailyMinutesDedication, dailyHoursDedication, start.getYear(), start.getMonthValue(), start.getDayOfMonth(), start.getHour(), start.getMinute(), start.getSecond(), false);
+        LocalDateTime start = handleGetStartDate();
+
+        LocalTime dailyDedication = LocalTime.of(dailyHoursDedication, dailyMinutesDedication);
+        habitTracker.addHabit(name, motivation, dailyDedication, start, false);
     }
 
     private String viewToDoHeader(){
@@ -128,7 +129,6 @@ public class StudyPlannerController {
         System.out.println(viewToDoHeader());
         System.out.println(todoTracker.toString());
     }
-
 
     private String viewHabitHeader(){
         return "Habits found: ";

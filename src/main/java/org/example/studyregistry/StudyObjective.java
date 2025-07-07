@@ -3,7 +3,7 @@ package org.example.studyregistry;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class StudyObjective extends Registry{
+public class StudyObjective extends Registry {
     private String title;
     private String description;
     private String topic;
@@ -12,93 +12,73 @@ public class StudyObjective extends Registry{
     private Double duration;
     private String objectiveInOneLine;
     private String objectiveFullDescription;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getTopic() {
-        return topic;
-    }
-
-    public Integer getPracticedDays() {
-        return practicedDays;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public Double getDuration() {
-        return duration;
-    }
-
-    public String getObjectiveInOneLine() {
-        return objectiveInOneLine;
-    }
-
-    public String getObjectiveFullDescription() {
-        return objectiveFullDescription;
-    }
-
-    public String getMotivation() {
-        return motivation;
-    }
-
     private String motivation;
 
-    @Override
-    public String toString(){
-        return "StudyObjective [title:" + title + ", description:" + description + (topic != null ? ", topic:" + topic : "")
-                + (practicedDays != null ? ", practicedDays:" + practicedDays : "") + (duration != null ? ", duration:" + duration : "")
-                + (objectiveInOneLine != null ? ", objective summary:" + objectiveInOneLine : "") + (objectiveFullDescription != null ? ", objective full description:" + objectiveFullDescription : "")
-                + (motivation != null ? ", motivation:" + motivation : "") + "]";
-    }
     public StudyObjective(String title, String description) {
         this.title = title;
         this.description = description;
-        this.name = title;
+        this.name = title; // herdado de Registry
     }
 
-    public void handleSetRegistry(Integer id, String name, Integer priority, boolean isActive){
-        this.id=id;
-        this.name=name;
-        this.priority=priority;
-        this.isActive=isActive;
+    public int handleSetObjectiveAdapter(List<Integer> intProperties, List<String> stringProperties, Double duration, boolean isActive) {
+        if (intProperties == null || intProperties.size() < 6)
+            throw new IllegalArgumentException("intProperties precisa ter pelo menos 6 elementos");
+        if (stringProperties == null || stringProperties.size() < 7)
+            throw new IllegalArgumentException("stringProperties precisa ter pelo menos 7 elementos");
+
+        this.id = intProperties.get(0);
+        this.priority = intProperties.get(1);
+        this.practicedDays = intProperties.get(2);
+        int day = intProperties.get(3);
+        int month = intProperties.get(4);
+        int year = intProperties.get(5);
+        this.startDate = LocalDateTime.of(year, month, day, 0, 0);
+
+        this.name = stringProperties.get(0);
+        this.title = stringProperties.get(1);
+        this.description = stringProperties.get(2);
+        this.topic = stringProperties.get(3);
+        this.objectiveInOneLine = stringProperties.get(4);
+        this.objectiveFullDescription = stringProperties.get(5);
+        this.motivation = stringProperties.get(6);
+
+        this.duration = duration;
+        this.isActive = isActive;
+
+        return this.id;
     }
 
-    public void handleSetTextualInfo(String title, String description, String topic,String objectiveInOneLine, String objectiveFullDescription, String motivation){
-        this.title=title;
-        this.description=description;
-        this.topic=topic;
-        this.objectiveInOneLine=objectiveInOneLine;
-        this.objectiveFullDescription=objectiveFullDescription;
-        this.motivation=motivation;
+    // ------------- Comportamentos adicionados ----------------
+
+    public void markAsPracticed() {
+        if (practicedDays == null) practicedDays = 0;
+        practicedDays++;
     }
 
-    public void handleSetTime(Integer practicedDays, int day, int month, int year, Double duration){
-        this.practicedDays=practicedDays;
-        this.duration=duration;
-        this.startDate= LocalDateTime.of(year, month, day, 0, 0);
+    public boolean isCompleted() {
+        return practicedDays != null && duration != null && practicedDays >= duration;
     }
 
-    public void handleSetObjective(Integer id, Integer priority, Integer practicedDays, int day, int month, int year, String name, String title, String description, String topic, String objectiveInOneLine, String objectiveFullDescription, String motivation, Double duration, boolean isActive){
-        handleSetRegistry(id, name, priority, isActive);
-        handleSetTextualInfo(title, description, topic, objectiveInOneLine, objectiveFullDescription, motivation);
-        handleSetTime(practicedDays, day, month, year, duration);
+    public String summary() {
+        return String.format("[%s] %s - %s | Progresso: %d/%.0f dias",
+                topic == null ? "Sem tópico" : topic,
+                title,
+                objectiveInOneLine == null ? "Sem objetivo curto" : objectiveInOneLine,
+                practicedDays == null ? 0 : practicedDays,
+                duration == null ? 0.0 : duration);
     }
 
-    public int handleSetObjectiveAdapter(List<Integer> intProperties, List<String> stringProperties, Double duration, boolean isActive){
-        handleSetObjective(intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5),
-                stringProperties.get(0), stringProperties.get(1), stringProperties.get(2), stringProperties.get(3), stringProperties.get(4), stringProperties.get(5), stringProperties.get(6), duration, isActive);
-        return intProperties.get(0);
-    }
+    // --------------------------------------------------------
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    // getters simples
+    public String getName() { return name; }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getTopic() { return topic; }
+    public Integer getPracticedDays() { return practicedDays; }
+    public LocalDateTime getStartDate() { return startDate; }
+    public Double getDuration() { return duration; }
+    public String getObjectiveInOneLine() { return objectiveInOneLine; }
+    public String getObjectiveFullDescription() { return objectiveFullDescription; }
+    public String getMotivation() { return motivation; }
 }

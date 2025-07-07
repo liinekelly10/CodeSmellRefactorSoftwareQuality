@@ -19,20 +19,28 @@ public class SearchLog {
         numUsages = 0;
         isLocked = false;
     }
-    public void addSearchHistory(String searchHistory) {
-        this.searchHistory.add(searchHistory);
+
+    // Método compatível com testes antigos
+    public void addSearchHistory(String term) {
+        recordSearch(term);
     }
+
+    // Método principal que encapsula a lógica de adicionar histórico e atualizar contador
+    public void recordSearch(String searchTerm) {
+        if (isLocked) {
+            throw new IllegalStateException("SearchLog is locked. Cannot modify.");
+        }
+        searchHistory.add(searchTerm);
+        searchCount.put(searchTerm, searchCount.getOrDefault(searchTerm, 0) + 1);
+        numUsages++;
+    }
+
     public List<String> getSearchHistory() {
         return searchHistory;
     }
-    public void setSearchHistory(List<String> searchHistory) {
-        this.searchHistory = searchHistory;
-    }
+
     public Map<String, Integer> getSearchCount() {
         return searchCount;
-    }
-    public void setSearchCount(Map<String, Integer> searchCount) {
-        this.searchCount = searchCount;
     }
 
     public boolean isLocked() {
@@ -47,15 +55,7 @@ public class SearchLog {
         return numUsages;
     }
 
-    public void setNumUsages(Integer numUsages) {
-        this.numUsages = numUsages;
-    }
-
     public String getLogName() {
         return logName;
-    }
-
-    public void setLogName(String logName) {
-        this.logName = logName;
     }
 }
