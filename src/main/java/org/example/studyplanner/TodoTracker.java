@@ -4,13 +4,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
 public class TodoTracker {
     private List<ToDo> toDos = new ArrayList<>();
     private Map<Integer, List<LocalDateTime>> tracker;
     private Integer nextId;
     private static TodoTracker instance;
-
 
     private TodoTracker() {
         this.tracker = new HashMap<>();
@@ -27,33 +25,37 @@ public class TodoTracker {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-        for (ToDo toDo : toDos) {
-            String todoInfo = toDo.toString();
-            str.append(todoInfo);
-            str.append("\n");
-            Integer id = toDo.getId();
-            List<LocalDateTime> todosDate = this.tracker.get(id);
-            if(todosDate == null){
-                str.append("No tracks found\n");
-            }else{
-                for (LocalDateTime ldt : todosDate) {
-                    String pattern = "yyyy-MM-dd HH:mm:ss";
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-                    String formattedDate = formatter.format(ldt);
-                    str.append(formattedDate);
-                    str.append("\n");
-                }
-            }
-        }
-        String response = str.toString();
-        if(response.isEmpty()){
+        if (toDos.isEmpty()) {
             return "No ToDos found";
         }
-        return response;
+
+        StringBuilder str = new StringBuilder();
+        for (ToDo toDo : toDos) {
+            appendToDoInfo(str, toDo);
+        }
+
+        return str.toString();
     }
 
-    public void addToDoExecutionTime(Integer id){
+    private void appendToDoInfo(StringBuilder str, ToDo toDo) {
+        str.append(toDo.toString()).append("\n");
+
+        List<LocalDateTime> executionDates = tracker.get(toDo.getId());
+        if (executionDates == null || executionDates.isEmpty()) {
+            str.append("No tracks found\n");
+        } else {
+            appendFormattedExecutionDates(str, executionDates);
+        }
+    }
+
+    private void appendFormattedExecutionDates(StringBuilder str, List<LocalDateTime> dates) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (LocalDateTime date : dates) {
+            str.append(formatter.format(date)).append("\n");
+        }
+    }
+
+    public void addToDoExecutionTime(Integer id) {
         List<LocalDateTime> et = tracker.computeIfAbsent(id, k -> new ArrayList<>());
         LocalDateTime now = LocalDateTime.now();
         et.add(now);
@@ -92,12 +94,11 @@ public class TodoTracker {
     public List<String> searchInTodos(String search) {
         List<String> todos = new ArrayList<>();
         for (ToDo toDo : toDos) {
-            if (toDo.getTitle().toLowerCase().contains(search.toLowerCase()) || toDo.getDescription().toLowerCase().contains(search.toLowerCase())) {
+            if (toDo.getTitle().toLowerCase().contains(search.toLowerCase()) ||
+                    toDo.getDescription().toLowerCase().contains(search.toLowerCase())) {
                 todos.add(toDo.toString());
             }
         }
         return todos;
     }
-
-
 }
