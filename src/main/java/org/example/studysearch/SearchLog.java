@@ -25,15 +25,17 @@ public class SearchLog {
         return numUsages;
     }
 
+    // Mantém método público para compatibilidade com testes
     public void addSearchHistory(String text) {
         searchHistory.add(text);
     }
 
+    // Se quiser, pode manter privado ou público
     public void incrementNumUsages() {
         this.numUsages++;
     }
 
-    // Método para registrar a busca
+    // Método para registrar busca (usa os dois acima)
     public void logSearch(String text) {
         addSearchHistory(text);
         incrementNumUsages();

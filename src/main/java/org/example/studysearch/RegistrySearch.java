@@ -15,24 +15,39 @@ public class RegistrySearch implements Search<String> {
 
     @Override
     public List<String> search(String text) {
-        return handleRegistrySearch(text);
+        List<String> results = new ArrayList<>();
+        results.addAll(searchInCards(text));
+        results.addAll(searchInHabits(text));
+        results.addAll(searchInTodos(text));
+        results.addAll(searchInRegistries(text));
+
+        logSearch(text);
+
+        results.add("\nLogged in: " + this.searchLog.getLogName());
+        return results;
+    }
+
+    private List<String> searchInCards(String text) {
+        return CardManager.getCardManager().searchInCards(text);
+    }
+
+    private List<String> searchInHabits(String text) {
+        return HabitTracker.getHabitTracker().searchInHabits(text);
+    }
+
+    private List<String> searchInTodos(String text) {
+        return TodoTracker.getInstance().searchInTodos(text);
+    }
+
+    private List<String> searchInRegistries(String text) {
+        return StudyTaskManager.getStudyTaskManager().searchInRegistries(text);
+    }
+
+    private void logSearch(String text) {
+        this.searchLog.logSearch(text);
     }
 
     public SearchLog getSearchLog() {
         return searchLog;
-    }
-
-    private List<String> handleRegistrySearch(String text) {
-        List<String> results = new ArrayList<>();
-        results.addAll(CardManager.getCardManager().searchInCards(text));
-        results.addAll(HabitTracker.getHabitTracker().searchInHabits(text));
-        results.addAll(TodoTracker.getInstance().searchInTodos(text));
-        results.addAll(StudyTaskManager.getStudyTaskManager().searchInRegistries(text));
-
-        this.searchLog.addSearchHistory(text);
-        this.searchLog.incrementNumUsages();
-
-        results.add("\nLogged in: " + this.searchLog.getLogName());
-        return results;
     }
 }
