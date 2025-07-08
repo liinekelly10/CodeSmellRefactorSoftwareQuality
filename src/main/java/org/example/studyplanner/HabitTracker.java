@@ -46,12 +46,11 @@ public class HabitTracker {
 
     public String formatHabitDate(LocalDateTime date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-
         return date.format(formatter);
     }
 
     public List<Integer> getTrackerKeys(){
-        return this.tracker.keySet().stream().toList();
+        return new ArrayList<>(this.tracker.keySet());
     }
 
     public int addHabit(String name, String motivation, Integer dailyMinutesDedication, Integer dailyHoursDedication, Integer year, Integer month, Integer day, Integer hour, Integer minute, Integer seconds, Boolean isConcluded) {
@@ -69,9 +68,7 @@ public class HabitTracker {
         return addHabit(stringProperties.get(0), stringProperties.get(1), intProperties.get(0), intProperties.get(1), intProperties.get(2), intProperties.get(3), intProperties.get(4), intProperties.get(5), intProperties.get(6), intProperties.get(7), isConcluded);
     }
 
-
     public int addHabit(String name, String motivation) {
-
         Habit habit = new Habit(name, motivation, this.nextId);
         this.habits.add(habit);
         int response = nextId;
@@ -111,4 +108,19 @@ public class HabitTracker {
         return habits;
     }
 
+    // ✅ Método movido de TimelineView — elimina o Feature Envy
+    public String getTimelineView() {
+        StringBuilder response = new StringBuilder();
+        for (Habit habit : this.getHabits()) {
+            response.append("[ Habit: ")
+                    .append(habit.getName())
+                    .append(". Records: ");
+            List<LocalDateTime> records = this.getHabitRecords(habit.getId());
+            for (LocalDateTime record : records) {
+                response.append(this.formatHabitDate(record)).append(", ");
+            }
+            response.append("]");
+        }
+        return response.toString();
+    }
 }
